@@ -7,14 +7,28 @@ urlpatterns = [
     path('',views.index, name='index'),
 
     #projet : URL menant à la page de la liste des produits
-    path('liste/', views.listeProduit, name="listeProduit" ),
+    path('liste1/', views.listeProduit, name="listeProduit" ),
 
     #projet : URL menant à la page d'ajout des produits
-    path('ajout/', views.ajoutProduit, name = "ajoutProduit")
+    path('ajout1/', views.ajoutProduit, name = "ajoutProduit"),
 
      #projet : URL menant à la page de la liste des categories
-   # path('', views.listeCategorie , name = "listeCategorie"),
+    path('liste2/', views.listeCategorie , name = "listeCategorie"),
 
   #projet : URL menant à la page d'ajout des categorie
-   # path('', views.ajoutCategorie, name = "ajoutCategorie" )
-]
+    path('ajout2/', views.ajoutCategorie, name = "ajoutCategorie" ),
+
+     #projet : URL menant à la page de la liste des achats
+    path('liste3/', views.listeAchat , name = "listeAchat"),
+
+     #projet : URL menant à la page de la liste des categories
+    path('liste4/', views.listeClient, name = "listeClient"),
+
+     #projet : URL menant à la page de la liste des categories
+    path('liste2/', views.listeFacture , name = "listeFacture"),
+
+
+    #Supprimer produit
+        path('produit/supprimer/<int:produit_id>/', views.supprimerProduit, name='supprimerProduit'),
+        path('categorie/supprimer/<int:categorie_id>/', views.supprimerCategorie, name='supprimerCategorie'),
+  ]

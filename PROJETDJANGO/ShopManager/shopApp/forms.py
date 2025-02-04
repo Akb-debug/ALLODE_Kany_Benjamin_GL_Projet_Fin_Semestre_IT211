@@ -38,3 +38,20 @@ class ProduitForm(forms.Form):
         widget=forms.ClearableFileInput(attrs={"class": "form-control"}),
         error_messages={"required":""}  # Message personnalisé vide
     )
+
+
+
+
+class categorieForm(forms.Form):
+    nom_categorie = forms.CharField(label= "Nom Categorie" ,max_length=255)
+    description = forms.CharField(
+        label="Description",
+        widget=forms.Textarea(attrs={"class": "form-control", "placeholder": "Entrez une description"}),
+        error_messages={"required": ""}  # Message personnalisé vide
+    )
+    image = forms.ImageField(
+        label="Image",
+        widget=forms.ClearableFileInput(attrs={"class": "form-control"}),
+        error_messages={"required":""}  # Message personnalisé vide
+    )
+   

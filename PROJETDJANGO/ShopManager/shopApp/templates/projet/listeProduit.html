@@ -166,27 +166,27 @@ input{
     <div class = "barrVertical">
       <ul  class="nav flex-column " >
         <li class="nav-item">
-            <a class="nav-link anima" href="#"> <i class="fas fa-home"></i>  Tableau de bord</a>
+            <a class="nav-link anima" href="{% url 'index' %}"> <i class="fas fa-home"></i>  Tableau de bord</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link anima" aria-current="page" href="#" >  <i class="fas fa-box"></i> Produit</a>
+            <a class="nav-link anima" aria-current="page" href="{% url 'listeProduit' %}" >  <i class="fas fa-box"></i> Produit</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link anima  " aria-current="page" href="#"> <i class="fas fa-th-large"></i>   Categorie</a>
+            <a class="nav-link anima  " aria-current="page" href="{% url 'listeCategorie' %}"> <i class="fas fa-th-large"></i>   Categorie</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link anima " aria-current="page" href="#">   <i class="fas fa-exchange-alt"></i> Achat/vente</a>
+            <a class="nav-link anima " aria-current="page" href="{% url 'listeAchat' %}">   <i class="fas fa-exchange-alt"></i> Achat/vente</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link anima " aria-current="page" href="#">  <i class="fas fa-user"></i> client</a>
+            <a class="nav-link anima " aria-current="page"href="{% url 'listeClient' %}">  <i class="fas fa-user"></i> client</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link anima" aria-current="page" href="#"> <i class="fas fa-file-invoice-dollar"></i> Factures</a>
+            <a class="nav-link anima" aria-current="page"href="{% url 'listeFacture' %}"> <i class="fas fa-file-invoice-dollar"></i> Factures</a>
           </li>
 
           <li class="nav-item">
             <div style="background-color: rgb(47, 108, 47); border-radius: 6px; width: 100px;">
-              <a class="nav-link " style="color: white !important;" aria-current="page" href="#">  <i class="fas fa-shopping-cart"></i>  Panier</a>
+              <a class="nav-link " style="color: white !important;" aria-current="page"href="{% url 'listeProduit' %}">  <i class="fas fa-shopping-cart"></i>  Panier</a>
           </div>
           </li>
           
@@ -236,7 +236,7 @@ input{
     
     <td>
     <a href = "" type="button" class="btn btn-warning"><i class="fas fa-edit"></i></a>
-    <a type="button" class="btn btn-danger" role = "Button" href = ""  onclick ="confirmerSuppression()" > <i class="fas fa-trash-alt"></i></a>
+    <a type="button" class="btn btn-danger" role = "Button"href="{% url 'supprimerProduit' produit.id %}"  onclick ="confirmerSuppression()" > <i class="fas fa-trash-alt"></i></a>
     </td>
 </tr>
 {% endfor %}

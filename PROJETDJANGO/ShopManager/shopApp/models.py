@@ -7,9 +7,9 @@ class Categorie(models.Model):
     description = models.TextField()
     image = models.ImageField(upload_to='categories' )
     date_add = models.DateTimeField(auto_now_add=True)
-    date_upd = models.DateTimeField(auto_now=True)
+    
 
-    def _str_(self):
+    def __str__(self):
         return self.nom_categorie
 
 
