@@ -105,7 +105,7 @@ def modifierProduit(request, produit_id):
     #Formulaire vide pour requête GET
     if request.method == "POST":
         #1 Récuperer les données
-        produitform = produitForm(request.POST, request.FILES, instance=produit)
+        produitform =  ProduitForm(request.POST, request.FILES, instance=produit)
         #2 Valider les données
         if produitform.is_valid():
             #3 Preparation des données
@@ -113,6 +113,12 @@ def modifierProduit(request, produit_id):
             desc = produitform.cleaned_data["description"]
             prix =produitform.cleaned_data["prix"]
             imge =produitform.cleaned_data["image"]
+
+            #Ddonner la nouvelle valeur au champ
+            produit.nom_produit = nom
+            produit.description = desc
+            produit.prix = prix
+            produit.image = imge
 
             #4 Création et sauvegarde d'un produit
 
@@ -122,7 +128,10 @@ def modifierProduit(request, produit_id):
         else:
             # Erreur de validation, afficher les erreurs
             return render(request, "projet/ajoutProduit.html", {"produitForm":produitform})
-        
+    else:
+        #Formulaire vide pour requête GET
+        produitform = ProduitForm(instance=produit)
+        return render(request, "projet/ajoutProduit.html", {"produitForm":produitform})
         #Supprimer categorie
 def supprimerCategorie(request, categorie_id):
     # Récupérer l'élément ou lever une erreur 404 s'il n'existe pas
