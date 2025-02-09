@@ -98,40 +98,47 @@ def supprimerProduit(request, produit_id):
     
     # Rediriger vers une autre page après la suppression 
     return redirect('listeProduit')  
+
 #Modification produit
+
 def modifierProduit(request, produit_id):
-    # Récupérer l'élément ou lever une erreur 404 s'il n'ex
+    # Récupérer l'élément ou lever une erreur 404
     produit = get_object_or_404(Produit, id=produit_id)
-    #Formulaire vide pour requête GET
+
     if request.method == "POST":
-        #1 Récuperer les données
-        produitform =  ProduitForm(request.POST, request.FILES, instance=produit)
-        #2 Valider les données
+        # Récupérer les données du formulaire soumis
+        produitform = ProduitForm(request.POST, request.FILES)
         if produitform.is_valid():
-            #3 Preparation des données
-            nom =produitform.cleaned_data["nom_produit"]
-            desc = produitform.cleaned_data["description"]
-            prix =produitform.cleaned_data["prix"]
-            imge =produitform.cleaned_data["image"]
+            # Mettre à jour les données du produit
+            produit.nom_produit = produitform.cleaned_data["nom_produit"]
+            produit.description = produitform.cleaned_data["description"]
+            produit.categorie = produitform.cleaned_data["categorie"]
+            produit.prix = produitform.cleaned_data["prix"]
+            produit.quantite = produitform.cleaned_data["quantite"]
+            produit.image = produitform.cleaned_data["image"]
 
-            #Ddonner la nouvelle valeur au champ
-            produit.nom_produit = nom
-            produit.description = desc
-            produit.prix = prix
-            produit.image = imge
-
-            #4 Création et sauvegarde d'un produit
-
-            produitform.save()
-            #5 Rediriger vers page listeProduit
+            # Sauvegarder le produit
+            produit.save()
             return redirect("listeProduit")
-        else:
-            # Erreur de validation, afficher les erreurs
-            return render(request, "projet/ajoutProduit.html", {"produitForm":produitform})
     else:
-        #Formulaire vide pour requête GET
-        produitform = ProduitForm(instance=produit)
-        return render(request, "projet/ajoutProduit.html", {"produitForm":produitform})
+        # Pré-remplir le formulaire avec les données existantes
+        initial_data = {
+            'nom_produit': produit.nom_produit,
+            'description': produit.description,
+            'categorie': produit.categorie,
+            'prix': produit.prix,
+            'quantite': produit.quantite,
+            'image': produit.image,
+        }
+        produitform = ProduitForm(initial=initial_data)
+
+    return render(request, "projet/modifierProduit.html", {"produitForm": produitform, 'produit': produit})
+
+
+       
+       
+       
+       
         #Supprimer categorie
 def supprimerCategorie(request, categorie_id):
     # Récupérer l'élément ou lever une erreur 404 s'il n'existe pas
@@ -142,4 +149,38 @@ def supprimerCategorie(request, categorie_id):
     
     # Rediriger vers une autre page après la suppression 
     return redirect('listeCategorie')  
+
+
+
+def modifierCategorie(request, categorie_id):
+    # Récupérer l'élément ou lever une erreur 404
+    categorie = get_object_or_404(Categorie, id=categorie_id)
+
+    if request.method == "POST":
+        # Récupérer les données du formulaire soumis
+        categorieform = CategorieForm(request.POST, request.FILES)
+        if categorieform.is_valid():
+            # Mettre à jour les données du produit
+            categorie.nom_categorie = categorieform.cleaned_data["nom_categorie"]
+            categorie.description = categorieform.cleaned_data["description"]
+            categorie.image = categorieform.cleaned_data["image"]
+
+
+
+ 
+            # Sauvegarder le produit
+            categorie.save()
+            return redirect("listeCategorie")
+    else:
+        # Pré-remplir le formulaire avec les données existantes
+        initial_data = {
+            'nom_categorie': categorie.nom_categorie,
+            'description': categorie.description,
+            'image': categorie.image,
+        }
+        categorieform = CategorieForm(initial=initial_data)
+
+    return render(request, "projet/modifierCategorie.html", {"categorieForm": categorieform, 'categorie':categorie})
+
+
 

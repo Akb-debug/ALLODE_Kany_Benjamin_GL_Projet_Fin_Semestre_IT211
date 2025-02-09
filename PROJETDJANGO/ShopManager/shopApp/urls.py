@@ -31,4 +31,5 @@ urlpatterns = [
     #Supprimer produit
         path('produit/supprimer/<int:produit_id>/', views.supprimerProduit, name='supprimerProduit'),
         path('categorie/supprimer/<int:categorie_id>/', views.supprimerCategorie, name='supprimerCategorie'),
+        path('categorie/modifierProduit/<int:produit_id>/', views.modifierProduit, name='modifierProduit'),
   ]

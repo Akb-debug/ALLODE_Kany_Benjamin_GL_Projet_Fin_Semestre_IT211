@@ -43,7 +43,12 @@ class ProduitForm(forms.Form):
 
 
 class categorieForm(forms.Form):
-    nom_categorie = forms.CharField(label= "Nom Categorie" ,max_length=255)
+    nom_categorie = forms.CharField(
+        max_length=255,
+        label="Nom Categorie",
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Entrez la categorie"}),
+        error_messages={"required": ""}  # Message personnalisé vide
+    )
     description = forms.CharField(
         label="Description",
         widget=forms.Textarea(attrs={"class": "form-control", "placeholder": "Entrez une description"}),
