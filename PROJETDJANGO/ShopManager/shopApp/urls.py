@@ -7,29 +7,50 @@ urlpatterns = [
     path('',views.index, name='index'),
 
     #projet : URL menant à la page de la liste des produits
-    path('liste1/', views.listeProduit, name="listeProduit" ),
+    path('listeProduit/', views.listeProduit, name="listeProduit" ),
+
+    #projet : URL menant à la page de la liste des produits
+    path('listeProduit2/', views.listeProduit2, name="listeProduit2" ),
 
     #projet : URL menant à la page d'ajout des produits
-    path('ajout1/', views.ajoutProduit, name = "ajoutProduit"),
+    path('ajoutProduit/', views.ajoutProduit, name = "ajoutProduit"),
+
+
+    
+    #projet : URL menant à la page d'ajout des produits
+    path('ajoutClient/', views.ajoutClient, name = "ajoutClient"),
+
 
      #projet : URL menant à la page de la liste des categories
-    path('liste2/', views.listeCategorie , name = "listeCategorie"),
+    path('listeCategorie/', views.listeCategorie , name = "listeCategorie"),
 
   #projet : URL menant à la page d'ajout des categorie
-    path('ajout2/', views.ajoutCategorie, name = "ajoutCategorie" ),
+    path('ajoutCategorie/', views.ajoutCategorie, name = "ajoutCategorie" ),
 
      #projet : URL menant à la page de la liste des achats
-    path('liste3/', views.listeAchat , name = "listeAchat"),
+    path('listeAchat/', views.listeAchat , name = "listeAchat"),
 
      #projet : URL menant à la page de la liste des categories
-    path('liste4/', views.listeClient, name = "listeClient"),
+    path('listeClient/', views.listeClient, name = "listeClient"),
 
      #projet : URL menant à la page de la liste des categories
-    path('liste2/', views.listeFacture , name = "listeFacture"),
+    path('listeFacture/', views.listeFacture , name = "listeFacture"),
 
 
     #Supprimer produit
-        path('produit/supprimer/<int:produit_id>/', views.supprimerProduit, name='supprimerProduit'),
-        path('categorie/supprimer/<int:categorie_id>/', views.supprimerCategorie, name='supprimerCategorie'),
-        path('categorie/modifierProduit/<int:produit_id>/', views.modifierProduit, name='modifierProduit'),
+        path('produit/supprimerProduit/<int:produit_id>/', views.supprimerProduit, name='supprimerProduit'),
+
+         #Supprimer categorie
+        path('categorie/supprimercategorie/<int:categorie_id>/', views.supprimerCategorie, name='supprimerCategorie'),
+
+        #Modiier Prduit
+        path('produit/modifierProduit/<int:produit_id>/', views.modifierProduit, name='modifierProduit'),
+
+        #Modifier categorie
+        path('categorie/modifierCategorie/<int:categorie_id>/', views.modifierCategorie, name='modifierCategorie'),
+
+        # Ajout Achat
+        path('ajoutAchat/<int:produit_id>/', views.ajoutAchat, name='ajoutAchat'),
+
+
   ]

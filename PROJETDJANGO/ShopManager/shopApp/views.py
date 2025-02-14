@@ -14,10 +14,39 @@ def index(request):
 #projet/: URL menant à la page de la liste des produits
 #Methode d'affichage de la liste des produits
 def listeProduit(request):
-    context = {"listeProduit":Produit.objects.all() }
-    return render(request , "projet/listeProduit.html", context) 
+    if request.method == "POST":
+        nom = request.POST.get("produit")
+        categorie = request.POST.get("categorie")
+        
+        produits = Produit.objects.all()
+
+        if nom:
+            produits = produits.filter(nom_produit__icontains=nom)
+        if categorie:
+            produits = produits.filter(categorie__icontains=categorie)
+
+        context = {"listeProduit": produits}
+        return render(request, "projet/listeProduit.html", context)
+
+    else:
+        produits = Produit.objects.all()
+        context = {"listeProduit": produits}
+        return render(request, "projet/listeProduit.html", context)
 
 
+
+#Liste produit
+def listeProduit2(request):
+    produits = Produit.objects.all()
+    context = {"listeProduit": produits}
+    return render(request , "projet/listeProduit2.html", context) 
+    
+
+#Liste Client
+def listeClient(request):
+    clients = PanierClient.objects.all()
+    context = {"listeClient": clients}
+    return render(request , "projet/listeClient.html", context) 
 
 #projet/: URL menant à la page de la liste des categories
 #Methode d'affichage de la liste des categorie
@@ -60,7 +89,7 @@ def ajoutCategorie(request):
 #Requête POST 
     if request.method == "POST":
         #1 Récuperer les données
-        categorieform = categorieForm(request.POST, request.FILES)
+        categorieform = CategorieForm(request.POST, request.FILES)
         #2 Valider les données
         if categorieform.is_valid():
             #3 Preparation des données 
@@ -74,7 +103,7 @@ def ajoutCategorie(request):
             return redirect("listeCategorie")
     else:
         #Formulaire vide pour requête GET 
-        categorieform = categorieForm()
+        categorieform = CategorieForm()
         
     return render(request , "projet/ajoutCategorie.html", {"categorieForm":categorieform})
 
@@ -87,7 +116,8 @@ def listeFacture(request):
 
 
 def listeClient(request):
-    return render(request , "projet/listFacture.html")      
+    return render(request , "projet/listFacture.html")   
+       
 #Sppression produit
 def supprimerProduit(request, produit_id):
     # Récupérer l'élément ou lever une erreur 404 s'il n'existe pas
@@ -151,7 +181,7 @@ def supprimerCategorie(request, categorie_id):
     return redirect('listeCategorie')  
 
 
-
+# Modifier categorie
 def modifierCategorie(request, categorie_id):
     # Récupérer l'élément ou lever une erreur 404
     categorie = get_object_or_404(Categorie, id=categorie_id)
@@ -165,9 +195,6 @@ def modifierCategorie(request, categorie_id):
             categorie.description = categorieform.cleaned_data["description"]
             categorie.image = categorieform.cleaned_data["image"]
 
-
-
- 
             # Sauvegarder le produit
             categorie.save()
             return redirect("listeCategorie")
@@ -182,5 +209,46 @@ def modifierCategorie(request, categorie_id):
 
     return render(request, "projet/modifierCategorie.html", {"categorieForm": categorieform, 'categorie':categorie})
 
+def ajoutClient(request):
+#Requête POST 
+    if request.method == "POST":
+        #1 Récuperer les données
+        clientform = ClientForm(request.POST)
+        #2 Valider les données
+        if clientform.is_valid():
+            #3 Preparation des données 
+            nom =clientform.cleaned_data["nom_client"]
+            #4 Création et sauvegarde d'un produit
+            oClient  = PanierClient(nom_client =nom)
+            oClient.save()
+            #5 Rediriger vers page listeProduit
+            return redirect("listeProduit2")
+    else:
+        #Formulaire vide pour requête GET 
+        clientform = ClientForm()
+        
+    return render(request , "projet/ajouterClient.html", {"clientForm":clientform})
 
 
+
+
+def ajoutAchat(request, produit_id):
+    produit = get_object_or_404(Produit, id=produit_id)
+    #panier = get_object_or_404(PanierClient, id=panier_id)
+    panier = PanierClient.objects.order_by('-id').first()
+
+
+    if request.method == "POST":
+        form = AchatForm(request.POST)
+        if form.is_valid():
+            quantite = form.cleaned_data['quantite_total']
+            mode_payement = form.cleaned_data['mode_payement']
+            
+            # Enregistrement manuel dans la base de données
+        oAchat  = Achat(produit = produit,quantite=quantite,panier=panier,mode_payement=mode_payement)
+        oAchat.save()
+
+        # return redirect('listeProduit2')  # Remplace par une page de confirmation ou autre
+    else:
+       achatform = AchatForm()
+    return render(request , "projet/ajoutAchat.html", {"achatForm":achatform})

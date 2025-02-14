@@ -207,8 +207,9 @@ input{
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         </ul>
-        <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Rechercher un produit" aria-label="Search">
+        <form class="d-flex" role="search" action="{% url 'listeProduit' %}" method="post">
+          {% csrf_token %}
+          <input class="form-control me-2" type="search" placeholder="Rechercher un produit" aria-label="Search" name="produit">
           <button class="btn btn-outline-success" type="submit">Rechercher</button>
         </form>
       </div>
@@ -242,9 +243,10 @@ input{
             <a class="nav-link anima" aria-current="page"href="{% url 'listeFacture' %}"> <i class="fas fa-file-invoice-dollar"></i> Factures</a>
           </li>
 
+
           <li class="nav-item">
             <div style="background-color: rgb(47, 108, 47); border-radius: 6px; width: 100px;">
-              <a class="nav-link " style="color: white !important;" aria-current="page"href="{% url 'listeProduit' %}">  <i class="fas fa-shopping-cart"></i>  Panier</a>
+              <a class="nav-link " style="color: white !important;" aria-current="page" href="{% url  'ajoutClient' %}" >  <i class="fas fa-shopping-cart"></i>  Panier</a>
           </div>
           </li>
           
@@ -266,8 +268,8 @@ input{
                             <div>{{ categorie.description }}</div>
                         </ul>
                         <div class="d-flex w-100 justify-content-between mb-2" style="gap: 10px;">
-                            <a type="button" class=" w-50 btn btn-lg btn-outline-danger" role = "Button"href="{% url 'supprimerCategorie' categorie.id %}"  onclick ="confirmerSuppression()" > <i class="fas fa-trash-alt"> </i> Supprimer</a>
-                            <button type="button" class="w-50 btn btn-lg btn-outline-primary">Modifier</button>
+                            <a type="button" class=" w-50 btn btn-lg btn-outline-danger" role = "Button"href="{% url 'supprimerCategorie' categorie.id %}"  onclick ="return confirm('Voulez-vous supprimer cette categorie?')" > <i class="fas fa-trash-alt"> </i> Supprimer</a>
+                            <a type="button" href="{% url 'modifierCategorie' categorie.id %}" class="w-50 btn btn-lg btn-outline-primary">Modifier</a>
                         </div>
                     </div>  
             </div>
