@@ -52,5 +52,27 @@ urlpatterns = [
         # Ajout Achat
         path('ajoutAchat/<int:produit_id>/', views.ajoutAchat, name='ajoutAchat'),
 
+        #listeAchat
+        path('listeAchat/', views.listeAchat, name='listeAchat'),
+
+         #listeClient
+        path('listeClient/', views.listeClient, name='listeClient'),
+
+         #listeFacture
+        path('listeFacture/', views.listeFacture, name='listeFacture'),
+
+          #Supprimer achat
+        path('achat/supprimerAchat/<int:achat_id>/', views.supprimerAchat, name='supprimerAchat'),
+
+          #Supprimer achat
+        path('client/supprimerClient/<int:panier_id>/', views.supprimerClient, name='supprimerClient'),
+
+         #Detail panier
+        path('panier/detailPanier/<int:panier_id>/', views.dtailPanier, name='detailPanier'),
+
+       #Dimprimer facture
+        path('panier/imprimerFacture/<int:panier_id>/', views.imprimerFacture, name='imprimerFacture'),
+
+
 
   ]

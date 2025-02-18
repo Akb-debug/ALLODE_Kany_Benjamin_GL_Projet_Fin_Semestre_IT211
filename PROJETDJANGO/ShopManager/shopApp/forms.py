@@ -68,3 +68,7 @@ class AchatForm(forms.Form):
     mode_payement = forms.CharField(
         max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'})
     )
+
+
+
+

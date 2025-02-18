@@ -1,5 +1,6 @@
 from django.shortcuts import render , redirect, get_object_or_404
 from django.http import HttpResponse
+from django.contrib import messages
 from shopApp.models import *
 from .forms import *
 
@@ -16,14 +17,18 @@ def index(request):
 def listeProduit(request):
     if request.method == "POST":
         nom = request.POST.get("produit")
-        categorie = request.POST.get("categorie")
+        nom_categorie = request.POST.get("categorie")
         
         produits = Produit.objects.all()
 
         if nom:
+            
             produits = produits.filter(nom_produit__icontains=nom)
-        if categorie:
-            produits = produits.filter(categorie__icontains=categorie)
+        if nom_categorie:
+            categories = Categorie.objects.all()
+            categories = categories.filter(nom_categorie__icontains = nom_categorie)
+            produits = produits.filter(categorie__in = categories)
+           # produits = Produit.objects.filter(categorie =categorie)
 
         context = {"listeProduit": produits}
         return render(request, "projet/listeProduit.html", context)
@@ -107,16 +112,23 @@ def ajoutCategorie(request):
         
     return render(request , "projet/ajoutCategorie.html", {"categorieForm":categorieform})
 
+#Liste achat
 def listeAchat(request):
-    return render(request , "projet/listAchat.html")
-
-
-def listeFacture(request):
-    return render(request , "projet/listFacture.html")
+    achats = Achat.objects.all()
+    contexte = {'listeAchat':achats}
+    return render(request , "projet/listAchat.html", contexte)
 
 
 def listeClient(request):
-    return render(request , "projet/listFacture.html")   
+    clients = PanierClient.objects.all()
+    contexte = {'listeClient':clients}
+    return render(request , "projet/listeClient.html",contexte)   
+
+
+def listeFacture(request):
+    clients = PanierClient.objects.all()
+    contexte = {'listeClient':clients}
+    return render(request , "projet/listeFacture.html",contexte)   
        
 #Sppression produit
 def supprimerProduit(request, produit_id):
@@ -169,7 +181,7 @@ def modifierProduit(request, produit_id):
        
        
        
-        #Supprimer categorie
+#Supprimer categorie
 def supprimerCategorie(request, categorie_id):
     # Récupérer l'élément ou lever une erreur 404 s'il n'existe pas
     ocategorie = get_object_or_404(Categorie, id=categorie_id)
@@ -234,21 +246,114 @@ def ajoutClient(request):
 
 def ajoutAchat(request, produit_id):
     produit = get_object_or_404(Produit, id=produit_id)
-    #panier = get_object_or_404(PanierClient, id=panier_id)
     panier = PanierClient.objects.order_by('-id').first()
 
 
     if request.method == "POST":
-        form = AchatForm(request.POST)
-        if form.is_valid():
-            quantite = form.cleaned_data['quantite_total']
-            mode_payement = form.cleaned_data['mode_payement']
-            
-            # Enregistrement manuel dans la base de données
-        oAchat  = Achat(produit = produit,quantite=quantite,panier=panier,mode_payement=mode_payement)
-        oAchat.save()
+        try:
+            achatform = AchatForm(request.POST)
+            if achatform.is_valid():
+                quantite = achatform.cleaned_data['quantite_total']
+                mode_payement = achatform.cleaned_data['mode_payement']
 
-        # return redirect('listeProduit2')  # Remplace par une page de confirmation ou autre
+            if quantite <= 0:
+                messages.error(request, "La quantité doit être supérieure à zéro.")
+                return redirect("ajoutAchat", produit.id)  
+
+            # Vérifier si la quantité demandée est disponible
+            if produit.quantite < quantite:
+                messages.error(request, "Stock insuffisant pour cet article.")
+                return redirect("ajoutAchat", produit.id)   
+            
+                # Enregistrement manuel dans la base de données
+            oAchat  = Achat(produit = produit,quantite=quantite,panier=panier,mode_payement=mode_payement)
+            oAchat.save()
+
+            messages.success(request, "Produit ajouté au panier avec succès !")
+            return redirect('listeProduit2')  
+
+
+        except Produit.DoesNotExist:
+            messages.error(request, "Produit introuvable.")
+        except ValueError:
+            messages.error(request, "Quantité invalide.")
+        except Exception as e:
+            messages.error(request, f"Erreur : {str(e)}")
+
+            #return redirect('listeProduit2')  
     else:
        achatform = AchatForm()
-    return render(request , "projet/ajoutAchat.html", {"achatForm":achatform})
+    return render(request , "projet/ajoutAchat.html", {"achatForm":achatform,"produit": produit})
+
+
+#Supprimer achat
+def supprimerAchat(request, achat_id):
+    # Récupérer l'élément ou lever une erreur 404 s'il n'existe pas
+    oAchat = get_object_or_404(Achat, id=achat_id)
+    
+    # Supprimer l'élément
+    oAchat.delete()
+    
+    # Rediriger vers une autre page après la suppression 
+    return redirect('listeAchat') 
+
+
+#Sppression client
+def supprimerClient(request, panier_id):
+    # Récupérer l'élément ou lever une erreur 404 s'il n'existe pas
+    panier = get_object_or_404(PanierClient, id=panier_id)
+    
+    # Supprimer l'élément
+    panier.delete()
+    
+    # Rediriger vers une autre page après la suppression 
+    return redirect('listeClient')  
+
+
+
+def dtailPanier(request, panier_id):
+    opanier = get_object_or_404(PanierClient, id=panier_id)
+
+    achat = Achat.objects.filter(panier=opanier)
+
+    context = {"listeAchat": achat}
+    return render(request, "projet/listeAchatPanier.html", context)
+
+
+def imprimerFacture(request, panier_id):
+    opanier = get_object_or_404(PanierClient, id=panier_id)
+
+    listeAchat = Achat.objects.filter(panier=opanier)
+    total = sum(a.prix_total for a in listeAchat) 
+    context = {"listeAchat": listeAchat, 'total': total}
+    return render(request, "projet/imprimerFacture.html", context)
+
+
+
+
+# # Modifier achat
+# def modifierAchat(request, achat_id):
+#     # Récupérer l'élément ou lever une erreur 404
+#     achat = get_object_or_404(Achat, id=achat_id)
+
+#     if request.method == "POST":
+#         # Récupérer les données du formulaiachatform = CategorieForm(request.POST, request.FILES)
+#         if achatform.is_valid():
+#             # Mettre à jour les données du produit
+#             categorie.nom_categorie = achatform.cleaned_data["nom_categorie"]
+#             categorie.description = achatform.cleaned_data["description"]
+#             categorie.image = achatform.cleaned_data["image"]
+
+#             # Sauvegarder le produit
+#             categorie.save()
+#             return redirect("listeCategorie")
+#     else:
+#         # Pré-remplir le formulaire avec les données existantes
+#         initial_data = {
+#             'nom_categorie': categorie.nom_categorie,
+#             'description': categorie.description,
+#             'image': categorie.image,
+#         }
+#         achatform = CategorieForm(initial=initial_data)
+
+#     return render(request, "projet/modifierCategorie.html", {"categorieForm": achatform, 'categorie':categorie})

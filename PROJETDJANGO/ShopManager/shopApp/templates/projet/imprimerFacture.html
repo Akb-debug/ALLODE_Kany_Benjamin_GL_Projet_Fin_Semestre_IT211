@@ -1,0 +1,213 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facture - ShopZen</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js"></script>
+<link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+
+   
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .body {
+            width: 55%;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px rgb(58, 58, 69);
+            padding: 30px;
+            margin-top: 25px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #3a3a45;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .nom {
+            font-size: 20px;
+            text-align: center;
+        }
+
+        .receipt-details .span {
+            border-bottom: 3px dotted rgb(118, 125, 126);
+            display: inline-block;
+            width: 70%;
+            margin-left: 10px;
+        }
+
+        .dpartemntSomme {
+            font-size: 20px;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 18px;
+        }
+
+        input {
+            width: 50%;
+            height: 30px;
+            border-radius: 5px;
+            border: 0.5px solid rgb(103, 102, 102);
+            padding: 0 10px;
+        }
+
+        .propriétReçu {
+            font-size: 20px;
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .sommeLettre {
+            font-size: 20px;
+            margin-top: 25px;
+        }
+
+        .objet {
+            font-size: 20px;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            margin-left: 14px;
+            margin-bottom: 20px;
+        }
+
+        
+        .bouton {
+            display: block;
+            margin: 30px auto;
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #boutonTelecharger:hover {
+            background-color: #3498db;
+        }
+
+        
+    </style>
+</head>
+<body>
+    <div style="display: flex;justify-content: center; align-items: center" >
+    <a href="{% url 'listeFacture' %}" type="button" class="btn btn-primary bouton" style=" text-decoration: none"> LISTE FACTURE</a>
+    </div>
+  
+    <div id="content" class="body">
+        <div class="header">
+      
+            <div class="nom">
+    <div style="display: flex; align-items: center;"> <img src="{% static 'images/logo.png' %}" alt="Logo" style="height: 60px;">
+        <div style="display: flex; gap: 3px"> </div>  <h4>ShopZen</h4> </div>
+               
+                Tel: 99667572 <br>
+                Adresse : Lome-Togo
+            </div>
+            {% if listeAchat %}
+            <div style="display: flex; gap : 5px">
+            <h3> N° : </h3>     <h4 style="color: red;">000  {{ listeAchat.0.panier.id }}</h4>
+            </div>
+           
+         {% else %}
+         <p class="text-danger">Aucun panier trouvé</p>
+         {% endif %}
+        </div>
+       
+  
+        <div class="receipt-details">
+            <div class="propriétReçu">
+                <span style="font-weight: bold; font-size: 20px; font-family: 'Felix Titling';">
+                    Reçu de Mr/Mm :  {{ listeAchat.0.panier }}   
+                </span>  
+            </div>
+
+            <div>
+
+
+                <table class="table table-bordered border border-dark" style="margin-top: 40px;">
+
+                    <thead>
+                    <tr>
+                        <th scope="col">Produit</th>
+                        <th scope="col">Prix Unitaire</th>
+                        <th scope="col">quantite</th>
+                        <th scope="col">Date Achat</th>
+                        <th scope="col">Montant</th>
+                        
+                    </tr>
+                    </thead>
+                    <tbody> 
+                    
+                      
+                        {% for achat in listeAchat %}
+                    <tr>
+                        <td>{{ achat.produit }}</td>
+                        <td>{{ achat.prix_unitaire }}</td>
+                        <td>{{ achat.quantite }}</td>
+                        <td>{{ achat.date_achat }}</td>
+                        <td>{{ achat.prix_total }}</td>
+                        
+                        
+                    </tr>
+                    {% empty %}
+                      <p class="text-danger">Aucun achat éffectué</p>
+                    {% endfor %}
+                        
+                        </tbody>
+                        </table>
+
+                        <div>
+                            <h4 style="text-align: end; margin-top: 10px; margin-bottom: 10px;">Montant Total : {{ total }} Fcfa</h4>
+                        </div>
+            </div>
+           
+            <div style="margin-left: 500px;">
+                <p>Fait à lomé le  {% now "d/m/Y" %}</p>
+                <div style="margin-top: 50px!important;">
+                    <p>Signature</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+    <button id="boutonTelecharger"  class="bouton">Télécharger en PDF</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#boutonTelecharger').click(function () {
+            html2canvas(document.getElementById('content')).then(canvas => {
+                var imgData = canvas.toDataURL('image/png');
+                var doc = new jsPDF('p', 'mm', 'a4');
+                var imgWidth = 190;
+                var imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                doc.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+                doc.save('facture.pdf');
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

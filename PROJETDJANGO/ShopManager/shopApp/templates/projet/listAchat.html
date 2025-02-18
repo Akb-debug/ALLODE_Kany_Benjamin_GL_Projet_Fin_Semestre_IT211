@@ -164,7 +164,7 @@ input{
 </header>
 
 
-  <div  style="display: flex; gap :350px">
+  <div  style="display: flex; gap : 90px">
     <div class = "barrVertical">
       <ul  class="nav flex-column " >
         <li class="nav-item">
@@ -195,16 +195,21 @@ input{
           
       </ul>
     </div>
-    <div style="width: 40%;">
-    <h1 style="text-align: center; font-weight:bold; color: black ; padding-top:50px">Liste des Clients</h1>
-  
+  <div style="width: 80%;">
+    <h1 style="text-align: center; font-weight:bold; color: black ; padding-top:50px">Liste des Achats</h1>
+
 
 <table class="table table-striped table-hover" style="border-radius: 10px;">
 <thead>
 <tr>
   <th scope="col">ID</th>
-  <th scope="col">Nom</th>
-  <th scope="col">Date Ajout</th>
+  <th scope="col">quantite</th>
+  <th scope="col">Prix Unitaire </th>
+  <th scope="col">Date Achat</th>
+  <th scope="col">Mode Payement</th>
+  <th scope="col">Prix Total</th>
+  <th scope="col">Panier</th>
+  <th scope="col">Produit</th>
   <th scope="col">Action</th>
 
 
@@ -212,19 +217,25 @@ input{
 </thead>
 <tbody> 
 
-    {% for client in listeClient %}
+    {% for achat in listeAchat %}
 
 <tr>
-    <td>{{ client.id }}</td>
-    <td>{{ client.nom_client }}</td>
-    <td>{{ client.date_add }}</td>
+    <td>{{ achat.id }}</td>
+    <td>{{ achat.quantite }}</td>
+    <td>{{ achat.prix_unitaire }}</td>
+    <td>{{ achat.date_achat }}</td>
+    <td>{{ achat.mode_payement }}</td>
+    <td>{{ achat.prix_total }}</td>
+    <td>{{ achat.panier }}</td>
+    <td>{{ achat.produit }}</td>
+    
     <td>
     <a href = "" type="button" class="btn btn-warning"><i class="fas fa-edit"></i></a>
-    <a type="button" class="btn btn-danger" role = "Button"href="{% url 'supprimerClient' client.id %}"  onclick ="return confirm('Voulez-vous vraiment suprimer ce client ou panier?')" > <i class="fas fa-trash-alt"></i></a>
+    <a type="button" class="btn btn-danger" role = "Button"href="{% url 'supprimerAchat' achat.id %}"  onclick ="return confirm('Voulez-Voulez-vous supprimer cet achat?')" > <i class="fas fa-trash-alt"></i></a>
     </td>
 </tr>
 {% empty %}
-  <p class="text-danger">Aucun client trouvé</p>
+  <p class="text-danger">Aucun achat éffectué</p>
 {% endfor %}
     
     

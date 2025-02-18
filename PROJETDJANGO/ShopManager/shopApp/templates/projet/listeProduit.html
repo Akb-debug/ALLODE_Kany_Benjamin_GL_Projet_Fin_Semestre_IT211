@@ -241,7 +241,7 @@ input{
     
     <td>
     <a href = "{% url 'modifierProduit' produit.id %}" type="button" class="btn btn-warning"><i class="fas fa-edit"></i></a>
-    <a type="button" class="btn btn-danger" role = "Button"href="{% url 'supprimerProduit' produit.id %}"  onclick ="confirmerSuppression()" > <i class="fas fa-trash-alt"></i></a>
+    <a type="button" class="btn btn-danger" role = "Button"href="{% url 'supprimerProduit' produit.id %}"  onclick ="return confirm('Cette action supprimera ce produit')" > <i class="fas fa-trash-alt"></i></a>
     </td>
 </tr>
 {% empty %}

@@ -22,16 +22,16 @@ class Produit(models.Model):
     image = models.ImageField(upload_to='produits')
     date_add = models.DateTimeField(auto_now_add=True)
 
-    def _str_(self):
-        return "Nom produit :", self.nom_produit, "categorie :", self.categorie.nom_categorie, "prix Unitaire: ", self.prix, "quantité: ", self.quantite
-
+    def __str__(self):
+        return f"{self.nom_produit}"
+          
 
 class PanierClient(models.Model):
     nom_client = models.CharField(max_length=255)
     achat = models.ManyToManyField(Produit, through='Achat')
     date_add = models.DateTimeField(auto_now_add=True)
 
-    def _str_(self):
+    def __str__(self):
         return self.nom_client
 
 
@@ -51,7 +51,15 @@ class Achat(models.Model):
         if self.quantite is not None:
             self.prix_total = self.prix_unitaire * self.quantite  # Calculer le prix total
         
+        # Vérifier la quantité disponible
+        if self.produit.quantite < self.quantite:
+            raise ValueError("Quantité demandée indisponible en stock.") 
+        
+        # Diminuer la quantité du produit
+        self.produit.quantite -= self.quantite
+        self.produit.save()  # Sauvegarder la mise à jour du stock
         super().save(*args, **kwargs)
+
 
     def __str__(self):
         return f"Achat de {self.quantite} {self.produit.nom_produit} - Total: {self.prix_total} FCFA"
@@ -59,7 +67,7 @@ class Achat(models.Model):
 
     
 
-    def _str_(self):
+    def __str__(self):
         return "Nom Produit :",self.produit.nom_produit, "quantité: ", self.quantite_total, "date achat: ", self.date_achat, "mode payement: ", self.mode_payement
 
 class Facture(models.Model):

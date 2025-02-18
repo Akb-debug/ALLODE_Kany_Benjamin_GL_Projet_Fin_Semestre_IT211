@@ -148,6 +148,23 @@ top: 20%;
 
 </header>
 
+<div style="display: flex; justify-content: center; align-items: center;">
+  {% if messages %}
+  <div id="alert-message">
+      {% for message in messages %}
+          <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+      {% endfor %}
+  </div>
+{% endif %}
+
+
+</div>
+
 
   <div  style="display: flex; gap : 400px">
     <div class = "barrVertical">
@@ -184,7 +201,7 @@ top: 20%;
         {% block contenu %}
     <div style="background-color: white; border-radius: 8px; margin-top: 50px; width: 500px;">
             
-        <form action="{% url 'ajoutClient' %}" method="post" style="padding: 15px;" enctype="multipart/form-data">
+        <form action="{% url 'ajoutAchat' produit.id  %}" method="post" style="padding: 15px;" enctype="multipart/form-data">
 
             {% csrf_token %}
             {{ achatForm.as_p }} 
@@ -198,6 +215,20 @@ top: 20%;
 </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script>
+  
+    setTimeout(function () {
+        let alertMessage = document.getElementById("alert-message");
+        if (alertMessage) {
+            alertMessage.style.transition = "opacity 0.5s ease";
+            alertMessage.style.opacity = "0";
+            setTimeout(() => {
+                alertMessage.style.display = "none";
+            }, 500); 
+        }
+    }, 5000);
+</script>
+
   <div class="content container">
 
    </div>
