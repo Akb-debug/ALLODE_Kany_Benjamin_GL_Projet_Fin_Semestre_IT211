@@ -50,15 +50,19 @@ class Achat(models.Model):
         
         if self.quantite is not None:
             self.prix_total = self.prix_unitaire * self.quantite  # Calculer le prix total
-        
-        # Vérifier la quantité disponible
-        if self.produit.quantite < self.quantite:
-            raise ValueError("Quantité demandée indisponible en stock.") 
-        
+            
         # Diminuer la quantité du produit
         self.produit.quantite -= self.quantite
         self.produit.save()  # Sauvegarder la mise à jour du stock
         super().save(*args, **kwargs)
+
+
+    def delete(self, *args, **kwargs):
+        # Ajouter la quantité achetée à la quantité du produit avant suppression
+        if self.produit:
+            self.produit.quantite += self.quantite
+            self.produit.save()
+        super().delete(*args, **kwargs)  # Supprime l'achat normalement
 
 
     def __str__(self):

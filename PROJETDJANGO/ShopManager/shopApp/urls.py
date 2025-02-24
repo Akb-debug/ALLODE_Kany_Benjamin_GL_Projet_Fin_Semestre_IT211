@@ -49,6 +49,12 @@ urlpatterns = [
         #Modifier categorie
         path('categorie/modifierCategorie/<int:categorie_id>/', views.modifierCategorie, name='modifierCategorie'),
 
+        #Modifier client
+        path('client/modifierClient/<int:client_id>/', views.modifierClient, name='modifierClient'),
+
+ #Modifier client
+        path('achat/modifierAchat/<int:achat_id>/', views.modifierAchat, name='modifierAchat'),
+
         # Ajout Achat
         path('ajoutAchat/<int:produit_id>/', views.ajoutAchat, name='ajoutAchat'),
 
@@ -70,9 +76,8 @@ urlpatterns = [
          #Detail panier
         path('panier/detailPanier/<int:panier_id>/', views.dtailPanier, name='detailPanier'),
 
-       #Dimprimer facture
+       #imprimer facture
         path('panier/imprimerFacture/<int:panier_id>/', views.imprimerFacture, name='imprimerFacture'),
-
-
-
-  ]
+        
+   
+]

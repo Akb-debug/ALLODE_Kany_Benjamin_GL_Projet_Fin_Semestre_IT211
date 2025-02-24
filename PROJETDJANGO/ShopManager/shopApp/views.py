@@ -1,16 +1,32 @@
 from django.shortcuts import render , redirect, get_object_or_404
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.contrib import messages
 from shopApp.models import *
 from .forms import *
+from django.db.models import Sum, Count
+from django.utils import timezone
 
 
 # Create your views here.
 
+    
 #projet/: URL menant à la page d'accueil 
 #Methode d'affichage du menu
+
 def index(request):
-    return render(request, 'projet/index.html')
+    # Récupération des produits ayant été achetés au moins une fois
+    produits = Produit.objects.annotate(total_vendu=Sum('achats__quantite')).filter(total_vendu__gt=0).order_by('-total_vendu')[:3]
+    total1 = Categorie.objects.count()
+    total2 = Produit.objects.count()
+    total3 = Achat.objects.count()
+    total4 = PanierClient.objects.count()
+    argent = Produit.objects.aggregate(argent=Sum('achats__prix_total'))['argent'] or 0
+    #Recuperer les données pour le  graphe
+    ventes = Achat.objects.filter(date_achat__isnull=False)
+    date_ventes = [vente.date_achat.strftime("%y/%m/%d") for vente in ventes]
+    chiffre_ventes = [vente.prix_total for vente in ventes]
+    contexte = {'produits': produits,'total1':total1,'total2':total2,'total3':total3,'total4':total4,'argent':argent,'date_ventes':date_ventes,'chiffre_ventes':chiffre_ventes }
+    return render(request, 'projet/index.html', contexte)
 
 #projet/: URL menant à la page de la liste des produits
 #Methode d'affichage de la liste des produits
@@ -28,13 +44,12 @@ def listeProduit(request):
             categories = Categorie.objects.all()
             categories = categories.filter(nom_categorie__icontains = nom_categorie)
             produits = produits.filter(categorie__in = categories)
-           # produits = Produit.objects.filter(categorie =categorie)
 
         context = {"listeProduit": produits}
         return render(request, "projet/listeProduit.html", context)
 
     else:
-        produits = Produit.objects.all()
+        produits = Produit.objects.all().order_by('id')
         context = {"listeProduit": produits}
         return render(request, "projet/listeProduit.html", context)
 
@@ -42,7 +57,7 @@ def listeProduit(request):
 
 #Liste produit
 def listeProduit2(request):
-    produits = Produit.objects.all()
+    produits = Produit.objects.all().order_by('id')
     context = {"listeProduit": produits}
     return render(request , "projet/listeProduit2.html", context) 
     
@@ -329,31 +344,56 @@ def imprimerFacture(request, panier_id):
     return render(request, "projet/imprimerFacture.html", context)
 
 
+# Modifier client
+def modifierClient(request, client_id):
+    # Récupérer l'élément ou lever une erreur 404
+    client = get_object_or_404(PanierClient, id=client_id)
+
+    if request.method == "POST":
+        # Récupérer les données du formulaire soumis
+        clientform = ClientForm(request.POST)
+        if clientform.is_valid():
+            # Mettre à jour les données du client
+            client.nom_client = clientform.cleaned_data["nom_client"]
+
+            # Sauvegarder le produit
+            client.save()
+            return redirect("listeClient")
+    else:
+        # Pré-remplir le formulaire avec les données existantes
+        initial_data = {
+            'nom_client': client.nom_client,
+        }
+        clientform = ClientForm(initial=initial_data)
+
+    return render(request, "projet/modifierClient.html", {"clientForm": clientform, 'client':client})
 
 
-# # Modifier achat
-# def modifierAchat(request, achat_id):
-#     # Récupérer l'élément ou lever une erreur 404
-#     achat = get_object_or_404(Achat, id=achat_id)
 
-#     if request.method == "POST":
-#         # Récupérer les données du formulaiachatform = CategorieForm(request.POST, request.FILES)
-#         if achatform.is_valid():
-#             # Mettre à jour les données du produit
-#             categorie.nom_categorie = achatform.cleaned_data["nom_categorie"]
-#             categorie.description = achatform.cleaned_data["description"]
-#             categorie.image = achatform.cleaned_data["image"]
 
-#             # Sauvegarder le produit
-#             categorie.save()
-#             return redirect("listeCategorie")
-#     else:
-#         # Pré-remplir le formulaire avec les données existantes
-#         initial_data = {
-#             'nom_categorie': categorie.nom_categorie,
-#             'description': categorie.description,
-#             'image': categorie.image,
-#         }
-#         achatform = CategorieForm(initial=initial_data)
+# Modifier achat
+def modifierAchat(request, achat_id):
+    # Récupérer l'élément ou lever une erreur 404
+    achat = get_object_or_404(Achat, id=achat_id)
 
-#     return render(request, "projet/modifierCategorie.html", {"categorieForm": achatform, 'categorie':categorie})
+    if request.method == "POST":
+        # Récupérer les données du formulaire
+        achatform = AchatForm(request.POST)
+        if achatform.is_valid():
+            # Mettre à jour les données du produit
+            achat.quantite = achatform.cleaned_data["quantite_total"]
+            achat.mode_payement = achatform.cleaned_data["mode_payement"]
+            
+
+            # Sauvegarder l'achat
+            achat.save()
+            return redirect("listeAchat")
+    else:
+        # Pré-remplir le formulaire avec les données existantes
+        initial_data = {
+            'quantite_total': achat.quantite,
+            'mode_payement': achat.mode_payement, 
+        }
+        achatform = AchatForm(initial=initial_data)
+
+        return render(request, "projet/modifierAchat.html", {"achatForm": achatform, "achat": achat})

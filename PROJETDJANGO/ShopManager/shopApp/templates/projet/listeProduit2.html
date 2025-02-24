@@ -281,9 +281,15 @@ input{
                       <h6 class="my-0 fw-normal btn" style="background-color: rgb(6, 151, 6);color: white;">Qt : {{ produit.quantite}}</h6>
                     </div>
                     <div class="card-body">
+                      {% if produit.image %}
                         <ul class="list-unstyled mt-3 mb-4">
                             <img src="{{ produit.image.url }}" alt ="imageProduit {{produit.nom}}" style = "width : 100px; height : 100px; border-radius: 20px; margin : 10px; object-fit: cover; margin-left: 35%">
                         </ul>
+                        {% else %}
+                        <ul class="list-unstyled mt-3 mb-4">
+                          <i class="fas fa-image"  style = "width : 100px; height : 100px; border-radius: 20px; margin : 10px; object-fit: cover; margin-left: 35%"></i>
+                      </ul>
+                      {%endif%}
                         <h6 style="text-align: center;">{{ produit.description }}</h6>
                         <div class="d-flex" style="gap: 50px;">
                             <a class="btn btn-danger">{{ produit.prix }}</a>
@@ -303,7 +309,7 @@ input{
         let alertMessage = document.getElementById("alert-message");
         if (alertMessage) {
             alertMessage.style.transition = "opacity 0.5s ease";
-            alertMessage.style.opacity = "0";
+            alertMessage.style.opacity = "1";
             setTimeout(() => {
                 alertMessage.style.display = "none";
             }, 500); 
