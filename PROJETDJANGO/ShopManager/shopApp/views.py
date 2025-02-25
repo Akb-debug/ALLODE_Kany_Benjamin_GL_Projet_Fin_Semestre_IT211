@@ -1,5 +1,5 @@
 from django.shortcuts import render , redirect, get_object_or_404
-from django.http import JsonResponse
+import json
 from django.contrib import messages
 from shopApp.models import *
 from .forms import *
@@ -13,19 +13,37 @@ from django.utils import timezone
 #projet/: URL menant à la page d'accueil 
 #Methode d'affichage du menu
 
+from django.shortcuts import render
+from django.db.models import Sum
+import json
+
 def index(request):
     # Récupération des produits ayant été achetés au moins une fois
     produits = Produit.objects.annotate(total_vendu=Sum('achats__quantite')).filter(total_vendu__gt=0).order_by('-total_vendu')[:3]
+    
     total1 = Categorie.objects.count()
     total2 = Produit.objects.count()
     total3 = Achat.objects.count()
     total4 = PanierClient.objects.count()
-    argent = Produit.objects.aggregate(argent=Sum('achats__prix_total'))['argent'] or 0
-    #Recuperer les données pour le  graphe
-    ventes = Achat.objects.filter(date_achat__isnull=False)
-    date_ventes = [vente.date_achat.strftime("%y/%m/%d") for vente in ventes]
-    chiffre_ventes = [vente.prix_total for vente in ventes]
-    contexte = {'produits': produits,'total1':total1,'total2':total2,'total3':total3,'total4':total4,'argent':argent,'date_ventes':date_ventes,'chiffre_ventes':chiffre_ventes }
+    
+    argent = Achat.objects.aggregate(argent=Sum('prix_total'))['argent'] or 0  # Modification ici
+
+    # Récupérer les données pour le graphe
+    achats = Achat.objects.order_by('-date_achat')[:5]  # Sélection des 10 dernières ventes
+    date_ventes = [vente.date_achat.strftime("%m/%d") for vente in achats if vente.date_achat]  # Vérification de date_achat
+    chiffre_ventes = [vente.prix_total for vente in achats]
+
+    contexte = {
+        'produits': produits,
+        'total1': total1,
+        'total2': total2,
+        'total3': total3,
+        'total4': total4,
+        'argent': argent,
+        'date_ventes': json.dumps(date_ventes),
+        'chiffre_ventes': json.dumps(chiffre_ventes),
+    }
+    
     return render(request, 'projet/index.html', contexte)
 
 #projet/: URL menant à la page de la liste des produits

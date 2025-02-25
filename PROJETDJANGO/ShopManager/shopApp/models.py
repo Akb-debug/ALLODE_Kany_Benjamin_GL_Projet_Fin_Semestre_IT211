@@ -42,7 +42,7 @@ class Achat(models.Model):
     panier = models.ForeignKey(PanierClient, on_delete=models.CASCADE, related_name='achts')
     date_achat = models.DateTimeField(auto_now_add=True)
     mode_payement = models.CharField(max_length=255)
-    prix_total = models.DecimalField(max_digits=10, decimal_places=2, editable=False)  # Calculé automatiquement
+    prix_total = models.FloatField( editable=False)  # Calculé automatiquement
 
     def save(self, *args, **kwargs):
         if not self.prix_unitaire:  # Vérifier si le prix_unitaire n'est pas encore défini
